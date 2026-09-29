@@ -1,0 +1,16 @@
+[  205312.915848] EV_ABS       ABS_MT_TRACKING_ID   00006cb4            
+[  205312.915848] EV_ABS       ABS_MT_POSITION_X    00003ae7            
+[  205312.915848] EV_ABS       ABS_MT_POSITION_Y    00005a50            
+[  205312.915848] EV_ABS       ABS_MT_TOUCH_MAJOR   00000245            
+[  205312.915848] EV_ABS       ABS_MT_PRESSURE      00000245            
+[  205312.915848] EV_KEY       BTN_TOUCH            DOWN                
+[  205312.915848] EV_SYN       SYN_REPORT           00000000            
+[  205312.930542] EV_ABS       ABS_MT_TOOL_TYPE     MT_TOOL_PALM        
+[  205312.930542] EV_ABS       ABS_MT_POSITION_X    00003aaa            
+[  205312.930542] EV_ABS       ABS_MT_POSITION_Y    00005a20            
+[  205312.930542] EV_ABS       ABS_MT_TOUCH_MAJOR   000003e8            
+[  205312.930542] EV_ABS       ABS_MT_PRESSURE      000003e8            
+[  205312.930542] EV_SYN       SYN_REPORT           00000000            
+[  205312.939045] EV_ABS       ABS_MT_TRACKING_ID   ffffffff            
+[  205312.939045] EV_KEY       BTN_TOUCH            UP                  
+[  205312.939045] EV_SYN       SYN_REPORT           00000000            
