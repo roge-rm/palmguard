@@ -21,13 +21,23 @@ filtered copy through a virtual `palmguard_ts` device:
 Filtering is only active while the pen is out of its silo. Docking the pen
 releases the real touchscreen, so a docked pen always means stock touch.
 
+## App
+
+The module installs a PalmGuard app (and a Quick Settings tile). Open it once
+and grant root in the Magisk prompt. From the app you can switch filtering on
+and off, see whether it's active, watch the contact sizes the pen and your
+hand report, change the settings (applied live, no restart), and read the log.
+
 ## Build
 
     ./build.sh
 
-On a PC this uses `cargo-ndk` (needs the Android NDK). In Termux
+On a PC this uses `cargo-ndk` (needs the Android NDK) and Gradle for the
+app (needs the Android SDK; `app/local.properties` sets `sdk.dir`). In Termux
 (`pkg install rust zip`) it builds natively. Either way you get
-`palmguard-magisk.zip`. Flash it in Magisk and reboot.
+`palmguard-magisk.zip`. Flash it in Magisk and reboot. (Termux builds skip
+the app.) To update just the app without reflashing:
+`adb install -r app/app/build/outputs/apk/release/app-release.apk`.
 
 `cargo test` replays real captures from the phone (`tests/data/`) through the
 filter logic and runs on any Linux/macOS host.
@@ -48,13 +58,14 @@ with the Magisk Action button):
 
 Each contact is logged with its size and whether it was treated as pen,
 passed, held, or rejected. Edit `/data/adb/palmguard/palmguard.conf`, then
-toggle the Action button twice. `touch /data/adb/palmguard/verbose` logs
-decisions from the service too.
+run `su -c sh /data/adb/modules/palmguard/ctl.sh reload` (or use the app).
+`verbose = true` in the config logs every decision.
 
 ## If touch ever misbehaves
 
 1. Dock the pen. That releases the real touchscreen immediately.
-2. Magisk Action button stops the daemon (and keeps it off).
+2. The app's switch, the Quick Settings tile or the Magisk Action button
+   stops the daemon (and keeps it off).
 3. `touch /data/adb/palmguard/disable` keeps it off across reboots.
 4. The daemon holds the grab through its own file handle, so if it crashes
    the stock touchscreen comes back automatically.
