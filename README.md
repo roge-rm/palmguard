@@ -23,10 +23,55 @@ releases the real touchscreen, so a docked pen always means stock touch.
 
 ## App
 
-The module installs a PalmGuard app (and a Quick Settings tile). Open it once
-and grant root in the Magisk prompt. From the app you can switch filtering on
-and off, see whether it's active, watch the contact sizes the pen and your
-hand report, change the settings (applied live, no restart), and read the log.
+The module installs a PalmGuard control app and a Quick Settings tile. It
+shows up in the launcher; if Android doesn't pick it up as a system app, the
+module installs it as a regular app on the next boot. Open it once and grant
+root in the Magisk prompt.
+
+**Status.** An on/off switch (off = stock touchscreen, and it stays off
+across reboots) with the current state:
+
+| State     | Meaning                                                        |
+|-----------|----------------------------------------------------------------|
+| Filtering | Pen is out, palm rejection is active                           |
+| Ready     | Pen is out, waiting for your hand to lift before taking over   |
+| Standby   | Pen is docked, stock touchscreen                               |
+| Off       | Switched off                                                   |
+| Crashed   | The daemon exited 5 times in a row; check the log, switch on   |
+
+"Restart daemon" is only needed after changing device names in the config.
+
+**Contact sizes.** While the daemon runs, a live card shows the last and
+largest pen contact, the last and smallest finger/hand contact, and how many
+touches were passed or blocked. Touch the screen with the pen, a finger and
+the side of your hand to see what each reports. If a non-pen contact was
+small enough to count as the pen at the current limit, it warns you.
+
+**Settings.** Sliders for the filter, applied live with "Save & apply" (the
+config file is rewritten in place, comments kept, and the daemon reloads it):
+
+| Setting                | Config key          | Default | What it does                                              |
+|------------------------|---------------------|---------|-----------------------------------------------------------|
+| Largest pen contact    | `pen_max_major`     | 80      | Contacts this size or smaller when they land are the pen  |
+| Pen grows into hand    | `pen_regrade_major` | 150     | A pen contact that grows past this is cancelled as a hand |
+| Grace after pen lifts  | `grace_ms`          | 500     | Ignore new touches this long after the pen lifts          |
+| Touch hold-off         | `holdoff_ms`        | 40      | Delay finger touches so a hand landing first is caught    |
+| Only while pen is out  | `require_pen_out`   | on      | Off filters all the time, even with the pen docked        |
+| Verbose log            | `verbose`           | off     | Log every contact decision                                |
+
+"Undo" drops unsaved changes and "Defaults" restores the values above.
+
+**Log.** "View log" shows the end of `/data/adb/palmguard/palmguard.log`.
+
+**Quick Settings tile.** Toggles PalmGuard on and off; its subtitle shows
+Filtering, Standby, Off, Crashed, or why it can't work (No root, Not
+installed).
+
+The Magisk Action button toggles it too, and reports whether it started.
+
+**Stylus-only drawing apps.** Since the pen is reported as a real stylus,
+apps like Sketchbook work with "stylus only" turned on. With the pen docked
+or PalmGuard off the pen is a plain finger again, so those apps ignore it.
 
 ## Build
 
@@ -34,7 +79,8 @@ hand report, change the settings (applied live, no restart), and read the log.
 
 On a PC this uses `cargo-ndk` (needs the Android NDK) and Gradle for the
 app (needs the Android SDK; `app/local.properties` sets `sdk.dir`). In Termux
-(`pkg install rust zip`) it builds natively. Either way you get
+(`pkg install rust zip`) it builds natively. Without `zip`, `build.sh`
+falls back to python3. Either way you get
 `palmguard-magisk.zip`. Flash it in Magisk and reboot. (Termux builds skip
 the app.) To update just the app without reflashing:
 `adb install -r app/app/build/outputs/apk/release/app-release.apk`.
@@ -52,14 +98,14 @@ The device config line should point at `palmguard_ts.idc`.
 ## Tuning
 
 Watch decisions live without touching the real input (stop the service first
-with the Magisk Action button):
+with the app's switch or the Magisk Action button):
 
     su -c '/data/adb/modules/palmguard/bin/palmguard --dry-run'
 
 Each contact is logged with its size and whether it was treated as pen,
 passed, held, or rejected. Edit `/data/adb/palmguard/palmguard.conf`, then
-run `su -c sh /data/adb/modules/palmguard/ctl.sh reload` (or use the app).
-`verbose = true` in the config logs every decision.
+run `su -c sh /data/adb/modules/palmguard/ctl.sh reload`, or use the app's
+settings and contact-size card instead.
 
 ## If touch ever misbehaves
 
