@@ -3,6 +3,41 @@
 Palm and stray-touch rejection for passive-stylus phones, built for the
 Moto G Stylus 2024 (`goodix_ts` touchscreen, `pen_detect` silo switch).
 
+## Requirements
+
+- Moto G Stylus 2024 (arm64, Android 10 or newer). It's the only phone
+  PalmGuard has been tested on; see "Other phones" below.
+- Root with [Magisk](https://github.com/topjohnwu/Magisk). The Action button
+  on the module needs Magisk 28 or newer; everything else works without it.
+- Nothing else: no Xposed/LSPosed, no extra apps.
+
+## Install
+
+1. Download `palmguard-magisk-vX.Y.Z.zip` from the
+   [latest release](https://github.com/roge-rm/palmguard/releases/latest).
+2. In Magisk, open Modules → Install from storage and pick the zip.
+3. Reboot.
+4. Open the PalmGuard app from the launcher and grant root when Magisk asks.
+5. Pull the pen out. The app should say "Filtering" once your hand is off
+   the screen.
+
+Or over adb from a PC:
+
+    adb push palmguard-magisk-vX.Y.Z.zip /sdcard/
+    adb shell su -c 'magisk --install-module /sdcard/palmguard-magisk-vX.Y.Z.zip'
+    adb reboot
+
+To update, install the new zip the same way; your settings in
+`/data/adb/palmguard/palmguard.conf` are kept. To uninstall, remove the
+module in Magisk and reboot; that also deletes `/data/adb/palmguard`.
+
+**Other phones.** PalmGuard finds the touchscreen and the pen silo switch by
+input device name (`touch_device = goodix_ts`, `pen_device = pen_detect` in
+the config). Another passive-stylus phone could work with those changed and
+`pen_max_major` tuned using the app's contact-size card, but that's untested,
+and the installer only copies the screen's calibration from a `goodix_ts`
+device config. `adb shell getevent -lp` lists your device names.
+
 ## How it works
 
 The Goodix driver reports the pen as a finger, but its contact size gives it
@@ -81,7 +116,7 @@ On a PC this uses `cargo-ndk` (needs the Android NDK) and Gradle for the
 app (needs the Android SDK; `app/local.properties` sets `sdk.dir`). In Termux
 (`pkg install rust zip`) it builds natively. Without `zip`, `build.sh`
 falls back to python3. Either way you get
-`palmguard-magisk.zip`. Flash it in Magisk and reboot. (Termux builds skip
+`palmguard-magisk.zip`; install it as above. (Termux builds skip
 the app.) To update just the app without reflashing:
 `adb install -r app/app/build/outputs/apk/release/app-release.apk`.
 
