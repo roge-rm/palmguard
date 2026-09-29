@@ -1,5 +1,5 @@
 target/
-palmguard-magisk.zip
+*.zip
 module/bin/palmguard
 module/system/app/
 app/.gradle/
