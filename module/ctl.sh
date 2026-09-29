@@ -7,7 +7,7 @@
 #   ctl.sh toggle    stop if running, else start
 #   ctl.sh state     print running=0|1 enabled=0|1 gave_up=0|1
 #   ctl.sh boot      start unless disabled (called by service.sh)
-MODDIR=${0%/*}
+MODDIR=$(dirname "$(readlink -f "$0")")
 DATA=/data/adb/palmguard
 LOG=$DATA/palmguard.log
 
@@ -51,7 +51,7 @@ case "$1" in
     pkill -HUP -x palmguard
     ;;
   toggle)
-    if [ -f "$DATA/disable" ]; then "$0" start; else "$0" stop; fi
+    if [ -f "$DATA/disable" ]; then sh "$MODDIR/ctl.sh" start; else sh "$MODDIR/ctl.sh" stop; fi
     ;;
   state)
     running=0; enabled=1; gave_up=0

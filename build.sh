@@ -26,5 +26,22 @@ if [ -z "$TERMUX_VERSION" ] && [ -z "$NO_APP" ]; then
   cp app/app/build/outputs/apk/release/app-release.apk module/system/app/PalmGuard/PalmGuard.apk
 fi
 rm -f palmguard-magisk.zip
-(cd module && zip -r9 ../palmguard-magisk.zip . -x '.*')
+if command -v zip >/dev/null; then
+  (cd module && zip -r9 ../palmguard-magisk.zip . -x '.*')
+else
+  python3 - <<'EOF'
+import os, zipfile
+with zipfile.ZipFile("palmguard-magisk.zip", "w", zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+    for root, dirs, files in os.walk("module"):
+        dirs[:] = sorted(d for d in dirs if not d.startswith("."))
+        for f in sorted(files):
+            if f.startswith("."):
+                continue
+            p = os.path.join(root, f)
+            info = zipfile.ZipInfo.from_file(p, os.path.relpath(p, "module"))
+            info.compress_type = zipfile.ZIP_DEFLATED
+            with open(p, "rb") as fh:
+                z.writestr(info, fh.read())
+EOF
+fi
 echo "Built palmguard-magisk.zip"

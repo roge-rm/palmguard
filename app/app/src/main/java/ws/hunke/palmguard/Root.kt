@@ -42,8 +42,9 @@ object Root {
         val w = input!!
         val r = output!!
         val marker = "__palmguard_done_${++seq}__"
-        // The leading \n ends any unterminated last line of output.
-        w.write("$cmd\nprintf '\\n%s %d\\n' $marker $?\n")
+        // Subshell so an `exit` in cmd can't end the root shell. The leading
+        // \n ends any unterminated last line of output.
+        w.write("(\n$cmd\n)\nprintf '\\n%s %d\\n' $marker $?\n")
         w.flush()
         val lines = ArrayList<String>()
         while (true) {

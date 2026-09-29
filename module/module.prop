@@ -2,5 +2,5 @@ id=palmguard
 name=PalmGuard
 version=v0.1.0
 versionCode=1
-author=you
+author=Dan Hunke
 description=Stylus palm and stray-touch rejection for passive-pen phones (Moto G Stylus 2024). Active only while the pen is out of its silo.

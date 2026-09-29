@@ -26,7 +26,7 @@ object Daemon {
     }
 
     fun state(): State {
-        val r = Root.run("[ -f $MOD/ctl.sh ] || exit 3; $CTL state; echo ---; cat $DATA/status 2>/dev/null")
+        val r = Root.run("[ -f $MOD/ctl.sh ] || exit 3; $CTL state; echo ---; cat $DATA/status 2>/dev/null; exit 0")
         if (r.code == 3) return State(problem = Problem.NO_MODULE)
         if (!r.ok) return State(problem = Problem.NO_ROOT)
         val split = r.lines.indexOf("---").let { if (it < 0) r.lines.size else it }

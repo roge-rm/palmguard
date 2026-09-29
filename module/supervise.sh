@@ -1,7 +1,7 @@
 #!/system/bin/sh
 # Keeps the palmguard daemon running until $DATA/disable exists.
 # Started by ctl.sh; do not run two of these (ctl.sh checks the pid file).
-MODDIR=${0%/*}
+MODDIR=$(dirname "$(readlink -f "$0")")
 DATA=/data/adb/palmguard
 LOG=$DATA/palmguard.log
 mkdir -p "$DATA"
