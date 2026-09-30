@@ -150,3 +150,7 @@ settings and contact-size card instead.
 3. `touch /data/adb/palmguard/disable` keeps it off across reboots.
 4. The daemon holds the grab through its own file handle, so if it crashes
    the stock touchscreen comes back automatically.
+
+## License
+
+MIT, see [LICENSE](LICENSE).
